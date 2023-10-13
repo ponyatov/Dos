@@ -60,7 +60,10 @@ $(APT_SRC)/%: tmp/%
 tmp/d-apt.list:
 	$(CURL) $@ http://master.dl.sourceforge.net/project/d-apt/files/d-apt.list
 
-gz: tmp/minimal.zip
+gz: ref/minimal-d/BARE
+
+ref/minimal-d/BARE: tmp/minimal.zip
+	unzip -x $< -d ref && touch $@
 
 tmp/minimal.zip:
 	$(CURL) $@ http://arsdnet.net/dcode/minimal.zip
