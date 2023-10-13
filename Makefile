@@ -25,17 +25,25 @@ CURL = curl -L -o
 LDC2 = $(CWD)/ldc/$(LDC_OS)/bin/ldc2
 
 # src
-D += $(wildcard src/*.d)
+D   = $(wildcard src/*.d)
+OSD = $(subst src/app.d,,$(D))
+OBJ = $(subst src/,lib/,$(subst .d,.o,$(OSD)))
 
 # all
 .PHONY: all
-all: $(D)
-	dub run
+all: fw/kernel.elf
+
+fw/kernel.elf: lib/qemu386.ld $(OBJ) 
+	ld -m elf_i386 -Tlib/qemu386.ld -o $@ $(OBJ) && objdump -x $@ > $@.objdump
 
 # format
 format: tmp/format_d
 tmp/format_d: $(D)
 	dub run dfmt -- -i $? && touch $@
+
+# rule
+lib/%.o: src/%.d
+	dmd -m32 -c $< -of=$@ && objdump -x $@ > $@.objdump
 
 # install
 APT_SRC = /etc/apt/sources.list.d
@@ -52,3 +60,7 @@ $(APT_SRC)/%: tmp/%
 tmp/d-apt.list:
 	$(CURL) $@ http://master.dl.sourceforge.net/project/d-apt/files/d-apt.list
 
+gz: tmp/minimal.zip
+
+tmp/minimal.zip:
+	$(CURL) $@ http://arsdnet.net/dcode/minimal.zip

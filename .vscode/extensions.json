@@ -9,5 +9,6 @@
         // LLVM
         "rreverser.llvm",
         "basdp.language-gas-x86",
+        // os
     ]
 }
