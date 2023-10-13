@@ -48,7 +48,7 @@ lib/%.o: src/%.d
 # install
 APT_SRC = /etc/apt/sources.list.d
 ETC_APT = $(APT_SRC)/d-apt.list $(APT_SRC)/llvm.list
-.PHONY: install update gz
+.PHONY: install update gz ref
 install: doc gz $(ETC_APT)
 	sudo apt update && sudo apt --allow-unauthenticated install -yu d-apt-keyring
 	$(MAKE) update
@@ -60,10 +60,16 @@ $(APT_SRC)/%: tmp/%
 tmp/d-apt.list:
 	$(CURL) $@ http://master.dl.sourceforge.net/project/d-apt/files/d-apt.list
 
-gz: ref/minimal-d/BARE
+gz: ref
+
+ref: ref/minimal-d/BARE ref/book/chapter_01/01/hello.d
 
 ref/minimal-d/BARE: tmp/minimal.zip
+	unzip -x $< -d ref && touch $@
+ref/book/chapter_01/01/hello.d: tmp/book.zip
 	unzip -x $< -d ref && touch $@
 
 tmp/minimal.zip:
 	$(CURL) $@ http://arsdnet.net/dcode/minimal.zip
+tmp/book.zip:
+	$(CURL) $@ http://arsdnet.net/dcode/book.zip
