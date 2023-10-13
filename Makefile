@@ -1,0 +1,54 @@
+# var
+MODULE  = $(notdir $(CURDIR))
+NOW     = $(shell date +%d%m%y)
+REL     = $(shell git rev-parse --short=4 HEAD)
+BRANCH  = $(shell git rev-parse --abbrev-ref HEAD)
+
+# version
+## debian 12 libc 2.29 since 1.32.1
+LDC_VER = 1.32.0
+
+# dir
+CWD = $(CURDIR)
+BIN = $(CWD)/bin
+SRC = $(CWD)/src
+TMP = $(CWD)/tmp
+GZ  = $(HOME)/gz
+
+# package
+LDC    = ldc2-$(LDC_VER)
+LDC_OS = $(LDC)-linux-x86_64
+LDC_GZ = $(LDC_OS).tar.xz
+
+# tool
+CURL = curl -L -o
+LDC2 = $(CWD)/ldc/$(LDC_OS)/bin/ldc2
+
+# src
+D += $(wildcard src/*.d)
+
+# all
+.PHONY: all
+all: $(D)
+	dub run
+
+# format
+format: tmp/format_d
+tmp/format_d: $(D)
+	dub run dfmt -- -i $? && touch $@
+
+# install
+APT_SRC = /etc/apt/sources.list.d
+ETC_APT = $(APT_SRC)/d-apt.list $(APT_SRC)/llvm.list
+.PHONY: install update gz
+install: doc gz $(ETC_APT)
+	sudo apt update && sudo apt --allow-unauthenticated install -yu d-apt-keyring
+	$(MAKE) update
+update:
+	sudo apt update
+	sudo apt install -yu `cat apt.txt`
+$(APT_SRC)/%: tmp/%
+	sudo cp $< $@
+tmp/d-apt.list:
+	$(CURL) $@ http://master.dl.sourceforge.net/project/d-apt/files/d-apt.list
+

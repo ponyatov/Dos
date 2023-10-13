@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "ryuta46.multi-command",
+        // D
+        // "webfreak.code-d",
+        "webfreak.dlang-bundle",
+        // C++
+        "ms-vscode.cpptools",
+        // LLVM
+        "rreverser.llvm",
+        "basdp.language-gas-x86",
+    ]
+}

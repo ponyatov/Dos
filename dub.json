@@ -1,0 +1,15 @@
+{
+    "name":        "dos",
+    "description": "D/os",
+    "homepage":    "https://github.com/ponyatov/Dos",
+    "authors":    ["Dmitry Ponyatov"],
+    "copyright":   "Copyright © 2023, Dmitry Ponyatov",
+    "license":     "MIT",
+    "targetType":  "executable",
+    "targetPath":  "bin",
+    "targetName":  "dos",
+    "dflags-dmd":   ["-od=tmp"],
+    "dflags-ldc":   ["-od=tmp"],
+    "dependencies": {
+    }
+}
