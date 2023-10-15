@@ -1,4 +1,4 @@
 git make curl
 code meld clang-format
 d-apt-keyring dmd-compiler dmd-tools dub g++
-llvm-15 libclang-15-dev
+llvm-15 libclang-15-dev nasm

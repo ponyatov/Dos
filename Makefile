@@ -34,16 +34,20 @@ LDC2 = $(CWD)/bin/$(LDC_OS)/bin/ldc2
 # src
 D   = $(wildcard src/*.d)
 OSD = $(subst src/app.d,,$(D))
-OBJ = $(subst src/,lib/,$(subst .d,.o,$(OSD)))
+OBJ = $(subst src/,lib/,$(subst .d,.o,$(OSD))) lib/multiboot1.o
 
 # cfg
 TARGET   = -mtriple $(TRIPLE) -march=$(ARCH) -mcpu=$(CPU)
-LDCFLAGS = $(TARGET) -defaultlib=
+LDCFLAGS = $(TARGET) -defaultlib= -betterC
 LLCFLAGS = $(subst -,--,$(TARGET))
 
 # all
 .PHONY: all
 all: fw/kernel.elf
+
+.PHONY: qemu
+qemu: fw/kernel.elf
+	qemu-system-i386 -kernel $<
 
 fw/kernel.elf: lib/qemu386.ld $(OBJ) 
 	ld -melf_i386 -Tlib/qemu386.ld -o $@ $(OBJ) && objdump -x $@ > $@.objdump
@@ -54,9 +58,11 @@ tmp/format_d: $(D)
 	dub run dfmt -- -i $? && touch $@
 
 # rule
+.PRECIOUS: tmp/%.s tmp/%.ll
 lib/%.o: tmp/%.ll tmp/%.s
 	$(LLC) $(LLCFLAGS) -filetype=obj -o $@ $<
-.PRECIOUS: tmp/%.s
+lib/%.o: src/%.s
+	nasm -felf32 -o $@ $<
 tmp/%.s: tmp/%.ll
 	$(LLC) $(LLCFLAGS) -filetype=asm -o $@ $<
 tmp/%.ll: src/%.d
@@ -81,8 +87,11 @@ gz: ref $(LDC2)
 
 $(LDC2): $(GZ)/$(LDC_GZ)
 	cd bin ; xzcat $< | tar -x && touch $@
+$(GZ)/$(LDC_GZ):
+	$(CURL) $@ https://github.com/ldc-developers/ldc/releases/download/v$(LDC_VER)/$(LDC_GZ)
 
-ref: ref/minimal-d/BARE ref/book/chapter_01/01/hello.d
+ref: ref/minimal-d/BARE ref/book/chapter_01/01/hello.d \
+	ref/syslinux/README
 
 ref/minimal-d/BARE: tmp/minimal.zip
 	unzip -x $< -d ref && touch $@
@@ -94,5 +103,5 @@ tmp/minimal.zip:
 tmp/book.zip:
 	$(CURL) $@ http://arsdnet.net/dcode/book.zip
 
-$(GZ)/$(LDC_GZ):
-	$(CURL) $@ https://github.com/ldc-developers/ldc/releases/download/v$(LDC_VER)/$(LDC_GZ)
+ref/syslinux/README:
+	git clone --depth 1 https://github.com/geneC/syslinux.git ref/syslinux
