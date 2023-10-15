@@ -22,6 +22,7 @@ LDC_GZ = $(LDC_OS).tar.xz
 
 # tool
 CURL = curl -L -o
+LLC  = llc-15
 LDC2 = $(CWD)/bin/$(LDC_OS)/bin/ldc2
 
 # src
@@ -37,7 +38,7 @@ LDCFLAGS = -mtriple i386-elf -defaultlib=
 all: fw/kernel.elf
 
 fw/kernel.elf: lib/qemu386.ld $(OBJ) 
-	ld -Tlib/qemu386.ld -o $@ $(OBJ) && objdump -x $@ > $@.objdump
+	ld -melf_i386 -Tlib/qemu386.ld -o $@ $(OBJ) && objdump -x $@ > $@.objdump
 
 # format
 format: tmp/format_d
@@ -45,9 +46,12 @@ tmp/format_d: $(D)
 	dub run dfmt -- -i $? && touch $@
 
 # rule
-lib/%.o: src/%.d
-	echo $(LDC2) -o $@ -c $<
-# dmd -m32 -c $< -of=$@ && objdump -x $@ > $@.objdump
+lib/%.o: tmp/%.ll
+	$(LLC) -filetype=obj -o $@ $<
+tmp/%.ll: src/%.d
+	$(LDC2) $(LDCFLAGS) --of=$@ -c $< --output-ll
+# lib/%.o: src/%.ll
+# 	$(LDC2) $(LDCFLAGS) --of=$@ -c $<
 
 # install
 APT_SRC = /etc/apt/sources.list.d
@@ -64,7 +68,10 @@ $(APT_SRC)/%: tmp/%
 tmp/d-apt.list:
 	$(CURL) $@ http://master.dl.sourceforge.net/project/d-apt/files/d-apt.list
 
-gz: ref $(GZ)/$(LDC_GZ)
+gz: ref $(LDC2)
+
+$(LDC2): $(GZ)/$(LDC_GZ)
+	cd bin ; xzcat $< | tar -x && touch $@
 
 ref: ref/minimal-d/BARE ref/book/chapter_01/01/hello.d
 
