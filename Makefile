@@ -4,6 +4,12 @@ NOW     = $(shell date +%d%m%y)
 REL     = $(shell git rev-parse --short=4 HEAD)
 BRANCH  = $(shell git rev-parse --abbrev-ref HEAD)
 
+# target
+CPU    = i486
+ARCH   = x86
+TRIPLE = i386-elf
+# -m32 -mcpu=i686 -mattr=sse2
+
 # version
 ## debian 12 libc 2.29 since 1.32.1
 LDC_VER = 1.32.0
@@ -31,7 +37,9 @@ OSD = $(subst src/app.d,,$(D))
 OBJ = $(subst src/,lib/,$(subst .d,.o,$(OSD)))
 
 # cfg
-LDCFLAGS = -mtriple i386-elf -defaultlib=
+TARGET   = -mtriple $(TRIPLE) -march=$(ARCH) -mcpu=$(CPU)
+LDCFLAGS = $(TARGET) -defaultlib=
+LLCFLAGS = $(subst -,--,$(TARGET))
 
 # all
 .PHONY: all
@@ -46,12 +54,13 @@ tmp/format_d: $(D)
 	dub run dfmt -- -i $? && touch $@
 
 # rule
-lib/%.o: tmp/%.ll
-	$(LLC) -filetype=obj -o $@ $<
+lib/%.o: tmp/%.ll tmp/%.s
+	$(LLC) $(LLCFLAGS) -filetype=obj -o $@ $<
+.PRECIOUS: tmp/%.s
+tmp/%.s: tmp/%.ll
+	$(LLC) $(LLCFLAGS) -filetype=asm -o $@ $<
 tmp/%.ll: src/%.d
-	$(LDC2) $(LDCFLAGS) --of=$@ -c $< --output-ll
-# lib/%.o: src/%.ll
-# 	$(LDC2) $(LDCFLAGS) --of=$@ -c $<
+	$(LDC2) $(LDCFLAGS) --output-ll --of=$@ -c $<
 
 # install
 APT_SRC = /etc/apt/sources.list.d

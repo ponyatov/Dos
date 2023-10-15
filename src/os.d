@@ -1,2 +1,4 @@
 // pragma(no_typeinfo);
-// pragma(dmd_no_moduleinfo);
+// pragma(ldc_no_moduleinfo);
+
+void none() {}
