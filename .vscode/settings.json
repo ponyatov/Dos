@@ -23,4 +23,22 @@
     "workbench.tree.indent": 24,
     "explorer.autoReveal": false,
     "files.insertFinalNewline": true,
+    "git.enabled": false,
+
+    // C++
+    "[c,cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.formatOnSave":     true
+    },
+    "C_Cpp.intelliSenseEngine": "Tag Parser",
+
+    // clang-format
+    "clang-format.executable":     "clang-format",
+    "clang-format.fallbackStyle":  "Google",
+    "clang-format.style":          "file",
+
+    // D
+    "d.dubPath": "/usr/bin/dub",
+    "d.dmdPath": "/usr/bin/dmd",
+    "d.dubCompiler": "/usr/bin/dmd",
 }

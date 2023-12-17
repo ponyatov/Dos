@@ -1,4 +1,5 @@
+rc
 .git/**
-/rc
 bin/**
+fw/**
 tmp/**

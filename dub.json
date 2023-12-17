@@ -1,7 +1,7 @@
 {
     "name":          "dos",
     "description":   "D/os",
-    "homepage":      "https://github.com/ponyatov/Dos",
+    "homepage":      "https://github.com/ponyatov/dos",
     "authors":      ["Dmitry Ponyatov <dponyatov@gmail.com>"],
     "copyright":     "Copyright © 2023, Dmitry Ponyatov <dponyatov@gmail.com>",
     "license":       "MIT",
