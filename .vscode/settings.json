@@ -12,7 +12,7 @@
 
     // files
     "files.associations": {
-        "*.S": "gas",
+        "*.s": "nasm",
     },
 
     // editor

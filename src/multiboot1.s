@@ -1,4 +1,5 @@
 ; Multiboot v1 - Compliant Header for QEMU (doesn't support v2)
+; https://www.gnu.org/software/grub/manual/multiboot/multiboot.html
 
 PAGE_ALIGN    equ  1<<0
 MEMORY_INFO   equ  1<<1
@@ -14,3 +15,7 @@ section .multiboot
 
 section .data
     db "Hello"
+
+section .text
+    nop
+    halt

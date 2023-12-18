@@ -12,6 +12,8 @@
         "rreverser.llvm",
         "basdp.language-gas-x86",
         // os
+        "zixuanwang.linkerscript",
         "basdp.language-gas-x86",
+        "rights.nas-vscode",
     ]
 }
